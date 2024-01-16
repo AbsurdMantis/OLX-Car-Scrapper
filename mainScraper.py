@@ -14,7 +14,7 @@ class OlxCars(scrapy.Spider):
     
  
     def start_requests(self):
-        ufs = ['sp', 'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi',
+        ufs = [ 'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi',
        'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to']
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0'}
         length = 1000
@@ -34,7 +34,7 @@ class OlxCars(scrapy.Spider):
                     yield scrapy.Request(url, headers=headers)
  
     def parse(self, response, **kwargs):
-        html = json.loads(response.xpath('//script[@id="_NEXT_DATA_"]/text()').get())
+        html = json.loads(response.xpath('//script[@id="__NEXT_DATA__"]/text()').get())
         links = html.get('props').get('pageProps').get('ads')
         for link in links:
             yield{
