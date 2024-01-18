@@ -16,22 +16,35 @@ class OlxCars(scrapy.Spider):
     def start_requests(self):
         ufs = [ 'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi',
        'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to']
+        low_density_ufs = ['ac', 'ap','pi','ro','rr','se','to','ma','mt']
+        medium_density_ufs = ['al','am','ba', 'ce','df','es','go','pa','pb','pe','rn','rs']
+        high_density_ufs = ['mg','pr','rj','sc','sp']
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0'}
         length = 1000
         for uf in ufs:
-            for price in range(5000, 300001, length):   
+            if uf in medium_density_ufs:
+                length = 8000
+            if uf in high_density_ufs:
+                length = 1000
+            if uf in low_density_ufs:
+                price = 5000
+                url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?ps={}'.format(uf,price)
                 for page in range(1, 101):
-                    if price >= 150000:
-                        if page == 1:
-                            url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?ps={}'.format(uf,price)
-                        else:
-                            url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?ps={}&o={}'.format(uf,price,page)
-                    else:
-                        if page == 1:
-                            url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?pe={}&ps={}'.format(uf,price, price-length)
-                        else:
-                            url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?pe={}&ps={}&o={}'.format(uf,price, price-length,page)
                     yield scrapy.Request(url, headers=headers)
+            else:
+                for price in range(5000, 300001, length):   
+                    for page in range(1, 101):
+                        if price >= 150000:
+                            if page == 1:
+                                url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?ps={}'.format(uf,price)
+                            else:
+                                url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?ps={}&o={}'.format(uf,price,page)
+                        else:
+                            if page == 1:
+                                url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?pe={}&ps={}'.format(uf,price, price-length)
+                            else:
+                                url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?pe={}&ps={}&o={}'.format(uf,price, price-length,page)
+                            yield scrapy.Request(url, headers=headers)
  
     def parse(self, response, **kwargs):
         html = json.loads(response.xpath('//script[@id="__NEXT_DATA__"]/text()').get())
