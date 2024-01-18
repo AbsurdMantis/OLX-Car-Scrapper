@@ -1,7 +1,8 @@
 import scrapy
 import json
- 
-class OlxCars(scrapy.Spider):
+from scrapy.utils.response import response_status_message
+
+class CatalogPageOLX(scrapy.Spider):
     name = 'olx'
  
     custom_settings = {
@@ -14,11 +15,20 @@ class OlxCars(scrapy.Spider):
     
  
     def start_requests(self):
-        ufs = [ 'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi',
-       'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to']
+        ufs = [ 'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 'ma', 'mt', 'ms', 'mg', 'pa',
+                'pb', 'pr', 'pe', 'pi',
+       'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to','ma','mt']
+        low_density_ufs = ['ac', 'ap','pi','ro','rr','se','to','ma','mt']
+        medium_density_ufs = ['al','am','ba', 'ce','df','es','go','pa','pb','pe','rn','rs']
+        high_density_ufs = ['mg','pr','rj','sc','sp']
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0'}
-        length = 1000
         for uf in ufs:
+            if uf in low_density_ufs:
+                url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?ps={}'.format(uf,price)
+            if uf in medium_density_ufs:
+                length = 8000
+            if uf in high_density_ufs:
+                length = 1000
             for price in range(5000, 300001, length):   
                 for page in range(1, 101):
                     if price >= 150000:
@@ -32,6 +42,7 @@ class OlxCars(scrapy.Spider):
                         else:
                             url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?pe={}&ps={}&o={}'.format(uf,price, price-length,page)
                     yield scrapy.Request(url, headers=headers)
+                    
  
     def parse(self, response, **kwargs):
         html = json.loads(response.xpath('//script[@id="__NEXT_DATA__"]/text()').get())
