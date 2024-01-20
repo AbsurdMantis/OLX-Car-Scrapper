@@ -23,9 +23,9 @@ class OlxCars(scrapy.Spider):
         length = 1000
         for uf in ufs:
             if uf in medium_density_ufs:
-                length = 8000
+                length = 10000
             if uf in high_density_ufs:
-                length = 1000
+                length = 2500
             if uf in low_density_ufs:
                 price = 5000
                 url = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-{}?ps={}'.format(uf,price)
@@ -47,6 +47,9 @@ class OlxCars(scrapy.Spider):
                             yield scrapy.Request(url, headers=headers)
  
     def parse(self, response, **kwargs):
+        #TODO: Save to db instead in order to save memory
+        #TODO: Only scrap new data(this would be rather difficult as we would need to diff two large json files)
+        #TODO: Check if AD still generates a response(keep in mind if ad is down it does not return 404 rather returns a OLX unavailable page)
         html = json.loads(response.xpath('//script[@id="__NEXT_DATA__"]/text()').get())
         links = html.get('props').get('pageProps').get('ads')
         for link in links:

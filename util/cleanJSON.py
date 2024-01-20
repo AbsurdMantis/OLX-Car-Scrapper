@@ -1,14 +1,13 @@
 import json
 
-urls = json.load(open('./urls.json', 'r'))
+with open('../data/urls.json') as json_file:
+    url_data = json.load(json_file)
 
-def del_null(urls):     
-     rez = urls.copy()     
-     for key, value in urls.items():     
-        if value is 'null' or value == '':             
-            del rez[key]         
-        elif isinstance(value, dict):             
-            rez[key] = del_null(value)     
-            return rez
-        
-del_null(urls)
+filter_words = ['repasse', 'sucata','batido','retirada','peças','quebrado']
+
+non_null_entries = [entry for entry in url_data if entry['url'] != 'null' and all(word not in entry['url'] for word in filter_words)]
+
+save_json = json.dumps(non_null_entries)
+
+with open('../data/filteredURL.json', 'w') as outfile:
+    outfile.write(save_json)
