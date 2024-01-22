@@ -12,7 +12,7 @@ class CarPageOLX(scrapy.Spider):
     }
 
     def start_requests(self):
-        urls = json.load(open('./urls.json', 'r'))
+        urls = json.load(open('./data/filteredURL.json', 'r'))
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0'}
         for link in urls:
             yield scrapy.Request(link['url'], headers=headers)
@@ -61,7 +61,6 @@ class CarPageOLX(scrapy.Spider):
             'url': ad['friendlyUrl'],
             'title' : ad['subject'],
             'price' : ad['price'],
-            'description' : ad['body'],
             'model' : [prop['value'] for prop in properties if prop['name'] == 'vehicle_model'][0],
             'brand' : [prop['value'] for prop in properties if prop['name'] == 'vehicle_brand'][0],
             'cartype': cartype_mapping.get([prop['value'] for prop in properties if prop['name'] == 'cartype'][0], -1),
