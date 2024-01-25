@@ -29,7 +29,10 @@ class CarPageOLX(scrapy.Spider):
 
         properties = ad['properties']
 
-        opcionais = [prop['value'] for prop in properties if prop['name'] == 'car_features'][0]
+        try:
+            opcionais = [prop['value'] for prop in properties if prop['name'] == 'car_features'][0]
+        except:
+            opcionais = ''
 
         opcionais_mapping = {
             'Air bag': 'airbag',
