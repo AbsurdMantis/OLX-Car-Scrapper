@@ -51,31 +51,32 @@ class CarPageOLX(scrapy.Spider):
             if i.strip() in opcionais_mapping:
                 opcionais_variables[opcionais_mapping[i.strip()]] = 1
             
-        cartype_mapping = {'Antigo': 0, 'Buggy': 1, 'Caminhão Leve': 2, 'Conversível': 3, 'Hatch': 4, 'Passeio': 5, 'Pick-up': 6, 'Sedã': 7, 'SUV': 8, 'Van/Utilitário': 9}
-        motorpower_mapping = {'1.0': 0, '1.2': 1, '1.3': 2, '1.4': 3, '1.5': 4, '1.6': 5, '1.7': 6, '1.8': 7, '1.9': 8, '2.0 - 2.9': 9, '3.0 - 3.9': 10, '4.0 ou mais': 11}
-        fuel_mapping = {'Gasolina': 0, 'Álcool': 1, 'Flex': 2, 'Diesel': 3, 'Híbrido': 4, 'Elétrico': 5, 'Gás Natural': 6}
-        gnv_mapping = {'Não': 0, 'Sim': 1}
-        gearbox_mapping = {'Manual': 0, 'Automático': 1, 'Semi-Automático': 2, 'Semi-automático': 2}
-        color_mapping = {'Preto': 0, 'Branco': 1, 'Prata': 2, 'Vermelho': 3, 'Cinza': 4, 'Azul': 5, 'Amarelo': 6, 'Verde': 7, 'Laranja': 8, 'Outra': 9}
-        doors_mapping = {'2 portas': 0, '4 portas': 2}
-        steering_mapping = {'Hidráulica': 0, 'Elétrica': 1, 'Mecânica': 2, 'Assistida': 3}
+        cartype_mapping = {'Antigo': 1, 'Buggy': 2, 'Caminhão Leve': 3, 'Conversível': 4, 'Hatch': 5, 'Passeio': 6, 'Pick-up': 7, 'Sedã': 8, 'SUV': 9, 'Van/Utilitário': 10}
+        motorpower_mapping = {'1.0': 1, '1.2': 2, '1.3': 3, '1.4': 4, '1.5': 5, '1.6': 6, '1.7': 7, '1.8': 8, '1.9': 9, '2.0 - 2.9': 10, '3.0 - 3.9': 11, '4.0 ou mais': 12}
+        fuel_mapping = {'Gasolina': 1, 'Álcool': 2, 'Flex': 3, 'Diesel': 4, 'Híbrido': 5, 'Elétrico': 6, 'Gás Natural': 7}
+        gnv_mapping = {'Não': 1, 'Sim': 2}
+        gearbox_mapping = {'Manual': 1, 'Automático': 2, 'Semi-Automático': 3, 'Semi-automático': 4}
+        color_mapping = {'Preto': 1, 'Branco': 2, 'Prata': 3, 'Vermelho': 4, 'Cinza': 5, 'Azul': 6, 'Amarelo': 7, 'Verde': 8, 'Laranja': 9, 'Outra': 10}
+        doors_mapping = {'2 portas': 1, '4 portas': 2}
+        steering_mapping = {'Hidráulica': 1, 'Elétrica': 2, 'Mecânica': 3, 'Assistida': 4}
 
         newline = {
             'url': ad['friendlyUrl'],
             'title' : ad['subject'],
             'price' : ad['price'],
+            'description' : ad['body'],
             'model' : [prop['value'] for prop in properties if prop['name'] == 'vehicle_model'][0],
             'brand' : [prop['value'] for prop in properties if prop['name'] == 'vehicle_brand'][0],
-            'cartype': cartype_mapping.get([prop['value'] for prop in properties if prop['name'] == 'cartype'][0], -1),
+            'cartype': cartype_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'cartype'), None), 0),
             'regdate': [prop['value'] for prop in properties if prop['name'] == 'regdate'][0],
             'mileage': [prop['value'] for prop in properties if prop['name'] == 'mileage'][0],
-            'motorpower': motorpower_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'motorpower'), None), -1),
-            'fuel': fuel_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'fuel'), None), -1),
-            'gnv_kit': gnv_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'gnv_kit'), None), -1),
-            'gearbox': gearbox_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'gearbox'), None), -1),
-            'carcolor': color_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'carcolor'), None), -1),
-            'doors': doors_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'doors'), None), -1),
-            'car_steering': steering_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'car_steering'), None), -1)
+            'motorpower': motorpower_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'motorpower'), None), 0),
+            'fuel': fuel_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'fuel'), None), 0),
+            'gnv_kit': gnv_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'gnv_kit'), None), 0),
+            'gearbox': gearbox_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'gearbox'), None), 0),
+            'carcolor': color_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'carcolor'), None), 0),
+            'doors': doors_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'doors'), None), 0),
+            'car_steering': steering_mapping.get(next((prop['value'] for prop in properties if prop['name'] == 'car_steering'), None), 0)
         }
 
         newline.update(opcionais_variables)
